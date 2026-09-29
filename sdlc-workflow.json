@@ -1,0 +1,303 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "certd SDLC: Spec Kit with PM, Architect and Claude",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "define",
+        "label": "Define the feature",
+        "focus": [
+          "setup",
+          "roadmap",
+          "specify"
+        ],
+        "note": "Architect sets rules once. PM picks the next feature and describes it; Claude drafts spec.md."
+      },
+      {
+        "id": "design",
+        "label": "Design and sign-off",
+        "focus": [
+          "plan",
+          "contract",
+          "signoff"
+        ],
+        "note": "Architect plans with Claude, checks contract fits the prototype, then PM and Architect approve the plan together."
+      },
+      {
+        "id": "build",
+        "label": "Build and integrate",
+        "focus": [
+          "implement",
+          "converge"
+        ],
+        "note": "PM builds prototype UI, Architect builds API, both via Claude. Architect wires the contract into the UI."
+      },
+      {
+        "id": "ship",
+        "label": "Review and release",
+        "focus": [
+          "pr_gate",
+          "review",
+          "deploy",
+          "bug"
+        ],
+        "note": "CI blocks bad code, Architect reviews and merges, pipeline deploys. Bugs take the bug extension path."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "pm",
+      "label": "Product Manager (human)"
+    },
+    {
+      "id": "agent",
+      "label": "Claude Code (AI agent)"
+    },
+    {
+      "id": "arch",
+      "label": "Architect (human)"
+    },
+    {
+      "id": "ci",
+      "label": "CI/CD + Review"
+    },
+    {
+      "id": "maint",
+      "label": "Maintenance",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "plan_phase",
+      "label": "Plan + specify",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "design_phase",
+      "label": "Design + sign-off",
+      "fromCol": 2,
+      "toCol": 2,
+      "variant": "emphasis"
+    },
+    {
+      "id": "build_phase",
+      "label": "Build + converge",
+      "fromCol": 3,
+      "toCol": 4
+    },
+    {
+      "id": "release_phase",
+      "label": "Release",
+      "fromCol": 5,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "setup",
+    "roadmap",
+    "specify",
+    "plan",
+    "contract",
+    "signoff",
+    "implement",
+    "converge",
+    "pr_gate",
+    "review",
+    "deploy"
+  ],
+  "nodes": [
+    {
+      "id": "setup",
+      "lane": "arch",
+      "col": 0,
+      "type": "backend",
+      "label": "Setup",
+      "sublabel": "init + constitution",
+      "tag": "step 1 \u00b7 once"
+    },
+    {
+      "id": "roadmap",
+      "lane": "pm",
+      "col": 0,
+      "type": "frontend",
+      "label": "Roadmap",
+      "sublabel": "feature order",
+      "tag": "step 2"
+    },
+    {
+      "id": "specify",
+      "lane": "agent",
+      "col": 1,
+      "type": "cloud",
+      "label": "Specify",
+      "sublabel": "spec.md + clarify",
+      "tag": "step 3"
+    },
+    {
+      "id": "plan",
+      "lane": "agent",
+      "col": 2,
+      "type": "cloud",
+      "label": "Plan",
+      "sublabel": "plan + contracts",
+      "tag": "step 4"
+    },
+    {
+      "id": "contract",
+      "lane": "arch",
+      "col": 2,
+      "type": "security",
+      "label": "Contract Fit",
+      "sublabel": "covers prototype",
+      "tag": "step 5 \u00b7 gate"
+    },
+    {
+      "id": "signoff",
+      "lane": "pm",
+      "col": 2,
+      "type": "security",
+      "label": "Plan Sign-off",
+      "sublabel": "PM + Architect",
+      "tag": "step 6 \u00b7 gate"
+    },
+    {
+      "id": "implement",
+      "lane": "agent",
+      "col": 3,
+      "type": "cloud",
+      "label": "Implement",
+      "sublabel": "apps/api + apps/web",
+      "tag": "step 7"
+    },
+    {
+      "id": "converge",
+      "lane": "agent",
+      "col": 4,
+      "type": "cloud",
+      "label": "Integrate",
+      "sublabel": "UI + converge",
+      "tag": "step 8"
+    },
+    {
+      "id": "pr_gate",
+      "lane": "ci",
+      "col": 4,
+      "type": "security",
+      "label": "CI Gates",
+      "sublabel": "test + scan",
+      "tag": "step 9 \u00b7 blocking"
+    },
+    {
+      "id": "review",
+      "lane": "arch",
+      "col": 5,
+      "type": "security",
+      "label": "PR Review",
+      "sublabel": "CODEOWNERS",
+      "tag": "step 10 \u00b7 gate"
+    },
+    {
+      "id": "deploy",
+      "lane": "ci",
+      "col": 5,
+      "type": "backend",
+      "label": "Deploy",
+      "sublabel": "pipeline, no agent",
+      "tag": "step 11"
+    },
+    {
+      "id": "bug",
+      "lane": "maint",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Bug Path",
+      "sublabel": "assess, fix, test",
+      "tag": "step 12 \u00b7 on demand"
+    }
+  ],
+  "edges": [
+    {
+      "from": "setup",
+      "to": "roadmap",
+      "label": "rules ready"
+    },
+    {
+      "from": "roadmap",
+      "to": "specify",
+      "label": "next feature"
+    },
+    {
+      "from": "specify",
+      "to": "plan",
+      "label": "spec ok"
+    },
+    {
+      "from": "plan",
+      "to": "contract",
+      "label": "OpenAPI"
+    },
+    {
+      "from": "contract",
+      "to": "signoff",
+      "label": "fits"
+    },
+    {
+      "from": "signoff",
+      "to": "plan",
+      "label": "revise",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "from": "signoff",
+      "to": "implement",
+      "label": "approved",
+      "variant": "emphasis"
+    },
+    {
+      "from": "implement",
+      "to": "converge"
+    },
+    {
+      "from": "converge",
+      "to": "pr_gate",
+      "label": "PR"
+    },
+    {
+      "from": "pr_gate",
+      "to": "review",
+      "label": "green"
+    },
+    {
+      "from": "review",
+      "to": "deploy",
+      "label": "merge",
+      "variant": "emphasis"
+    },
+    {
+      "from": "deploy",
+      "to": "bug",
+      "label": "incident",
+      "variant": "security",
+      "role": "error"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Team: 2 people + Claude",
+      "items": [
+        "Product Manager (human): feature roadmap, specs, prototype UI only; never reviews PRs",
+        "Architect (human): setup, plans, contracts, API, UI integration, CI, all PR reviews and merges",
+        "Claude Code (AI agent): runs /speckit-* skills and writes drafts and code; one session per person; never approves, merges or deploys",
+        "Hover or click any step for its activity and who does it"
+      ]
+    }
+  ]
+}
